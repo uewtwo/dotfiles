@@ -1,0 +1,106 @@
+tap "argon/mas"
+tap "hashicorp/tap"
+tap "homebrew/bundle"
+tap "homebrew/cask"
+tap "homebrew/core"
+tap "homebrew/services"
+tap "leoafarias/fvm"
+tap "stepanhruda/tap"
+brew "act"
+brew "anyenv"
+brew "aws-elasticbeanstalk"
+brew "pycparser"
+brew "cffi"
+brew "cryptography"
+brew "awscli"
+brew "azure-cli"
+brew "bash-completion"
+brew "glib"
+brew "cairo"
+brew "direnv"
+brew "docutils"
+brew "folly"
+brew "fizz"
+brew "wangle"
+brew "fbthrift"
+brew "fb303"
+brew "edencommon"
+brew "exiftool"
+brew "gh"
+brew "git"
+brew "git-flow-avh"
+brew "gnu-sed"
+brew "jq"
+brew "libfido2"
+brew "libgit2"
+brew "libomp", link: true
+brew "licensefinder"
+brew "mas"
+brew "mycli"
+brew "protobuf"
+brew "mysql"
+brew "p7zip"
+brew "peco"
+brew "pgcli"
+brew "poetry"
+brew "postgresql@14"
+brew "redis"
+brew "swig"
+brew "tcl-tk"
+brew "telnet"
+brew "tmux"
+brew "tree"
+brew "unar"
+brew "watchman"
+brew "wget"
+brew "zplug"
+brew "zsh"
+brew "zsh-completions"
+brew "hashicorp/tap/terraform"
+cask "android-studio", args: { appdir: "/Applications" }
+cask "brave-browser"
+cask "chromedriver", args: { appdir: "/Applications" }
+cask "coteditor", args: { appdir: "/Applications" }
+cask "cursor"
+cask "dbeaver-community", args: { appdir: "/Applications" }
+cask "diffmerge", args: { appdir: "/Applications" }
+cask "discord", args: { appdir: "/Applications" }
+cask "docker", args: { appdir: "/Applications" }
+cask "drawio"
+cask "firealpaca", args: { appdir: "/Applications" }
+cask "firefox", args: { appdir: "/Applications" }
+cask "gather"
+cask "ghostty"
+cask "google-cloud-sdk", args: { appdir: "/Applications" }
+cask "gyazo"
+cask "haroopad", args: { appdir: "/Applications" }
+cask "meetingbar"
+cask "microsoft-auto-update"
+cask "microsoft-office", args: { appdir: "/Applications" }
+cask "notion", args: { appdir: "/Applications" }
+cask "pomatez"
+cask "postman", args: { appdir: "/Applications" }
+cask "raycast"
+cask "scroll-reverser", args: { appdir: "/Applications" }
+cask "sequel-ace", args: { appdir: "/Applications" }
+cask "skitch"
+cask "table-tool"
+cask "tableplus"
+cask "the-unarchiver", args: { appdir: "/Applications" }
+cask "typora", args: { appdir: "/Applications" }
+cask "visual-studio-code", args: { appdir: "/Applications" }
+cask "zed"
+cask "zulu"
+mas "1Password 7", id: 1333542190
+mas "Amphetamine", id: 937984704
+mas "Developer", id: 640199958
+mas "Gapplin", id: 768053424
+mas "GarageBand", id: 682658836
+mas "iMovie", id: 408981434
+mas "Keynote", id: 409183694
+mas "Mini Calendar", id: 1088779979
+mas "Monosnap", id: 540348655
+mas "Numbers", id: 409203825
+mas "Pages", id: 409201541
+mas "RunCat", id: 1429033973
+mas "Xcode", id: 497799835

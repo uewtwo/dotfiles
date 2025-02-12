@@ -1,0 +1,25 @@
+[user]
+    name = uewtwo
+    email = nkyt161@gmail.com
+[core]
+    quotepath = false
+[pull]
+    rebase = false
+[fetch]
+    prune = true
+[push]
+    autoSetupRemote = true
+    default = current
+[init]
+    defaultBranch = main
+[alias]
+    push-f = push --force-with-lease
+[diff]
+    tool = difftastic
+    external = difft
+[difftool]
+    prompt = false
+[difftool "difftastic"]
+    cmd = difft "$LOCAL" "$REMOTE"
+[pager]
+    difftool = true

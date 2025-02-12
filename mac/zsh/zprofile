@@ -1,0 +1,35 @@
+export XDG_CONFIG_HOME=$HOME/.config
+export XDG_CACHE_HOME=$HOME/.cache
+export XDG_DATA_HOME=$HOME/.local/share
+export XDG_STATE_HOME=$HOME/.local/state
+export XDG_DATA_DIRS=/usr/local/share:/usr/share
+export XDG_CONFIG_DIRS=/etc/xdg
+
+
+if which arch >/dev/null && [[ $(arch) = "arm64" ]]; then
+    PATH="/opt/homebrew_x86/bin:$PATH"
+    PATH="/opt/homebrew/bin:$PATH"
+    PATH="/opt/homebrew/opt/coreutils/libexec/gnubin:$PATH"
+    PATH="/opt/homebrew/opt/gnu-sed/libexec/gnubin:$PATH"
+else
+    PATH="/opt/homebrew_x86/bin:$PATH"
+    PATH="/opt/homebrew_x86/opt/coreutils/libexec/gnubin:$PATH"
+    PATH="/opt/homebrew_x86/opt/gnu-sed/libexec/gnubin:$PATH"
+fi
+
+export DOTFILES="$HOME/dotfiles.mac"
+export EDITOR=vim
+
+FZF_DEFAULT_OPTS=""
+FZF_DEFAULT_OPTS+=" --exact"
+FZF_DEFAULT_OPTS+=" --no-mouse --no-sort"
+FZF_DEFAULT_OPTS+=" --bind='ctrl-s:toggle-sort'"
+FZF_DEFAULT_OPTS+=" --bind='ctrl-g:track+clear-query'"
+export FZF_DEFAULT_OPTS
+
+PATH="$HOME/bin/main:$PATH"
+
+if echo $_ | grep -qF 'zsh'; then
+    typeset -U path PATH
+fi
+

@@ -1,0 +1,162 @@
+bindkey -e
+
+### Added by Zinit's installer
+if [[ ! -f $HOME/.local/share/zinit/zinit.git/zinit.zsh ]]; then
+    print -P "%F{33} %F{220}Installing %F{33}ZDHARMA-CONTINUUM%F{220} Initiative Plugin Manager (%F{33}zdharma-continuum/zinit%F{220})…%f"
+    command mkdir -p "$HOME/.local/share/zinit" && command chmod g-rwX "$HOME/.local/share/zinit"
+    command git clone https://github.com/zdharma-continuum/zinit "$HOME/.local/share/zinit/zinit.git" && \
+        print -P "%F{33} %F{34}Installation successful.%f%b" || \
+        print -P "%F{160} The clone has failed.%f%b"
+fi
+
+source "$HOME/.local/share/zinit/zinit.git/zinit.zsh"
+autoload -Uz _zinit
+(( ${+_comps} )) && _comps[zinit]=_zinit
+
+# Load a few important annexes, without Turbo
+# (this is currently required for annexes)
+zinit light-mode for \
+    zdharma-continuum/zinit-annex-as-monitor \
+    zdharma-continuum/zinit-annex-bin-gem-node \
+    zdharma-continuum/zinit-annex-patch-dl \
+    zdharma-continuum/zinit-annex-rust
+
+### End of Zinit's installer chunk
+
+#
+# プラグインインストール
+#
+# Ninja
+zinit ice wait'!0' src"ninja.zsh" silent; zinit light cm-hirano-shigetoshi/cli-ninja # old
+zinit ice atclone"bash build.sh" atpull'%atclone' src"ninja.zsh" silent
+zinit light cm-hirano-shigetoshi/CommandLineNinja
+
+# ディレクトリスタック
+zinit ice atclone"bash build.sh" atpull'%atclone' src"d.zsh"
+zinit light cm-hirano-shigetoshi/d
+bindkey "^d^d" d
+
+# コマンド履歴
+zinit ice atclone"bash build.sh" atpull'%atclone' src"history.zsh"
+zinit light cm-hirano-shigetoshi/CommandHistory
+bindkey "^r" fzf-command-history
+
+# コマンドに色を付ける
+zinit ice wait'!0' silent; zinit light zdharma/fast-syntax-highlighting
+# クリップボード履歴
+zinit ice wait'!0' silent; zinit light cm-hirano-shigetoshi/clipboard-history
+# クリップボード変換テンプレ
+zinit ice wait'!0' silent; zinit light cm-hirano-shigetoshi/clipboard-convert-template
+# スニペットの貼り付け機能
+zinit ice wait'!0' silent; zinit light cm-hirano-shigetoshi/snippet
+# ファイル名検索
+zinit ice wait'!0' src"FzfFileSelector" silent; zinit light cm-hirano-shigetoshi/FzfFileSelector
+zle -N _fzf_file_selector
+bindkey '\e[Z' _fzf_file_selector
+# Powerlevel10k
+zinit ice depth=1
+zinit light romkatv/powerlevel10k
+
+# aws cliコマンド拡張
+zinit ice wait'!0' src"aws-cli-fzf.zsh" silent; zinit light cm-hirano-shigetoshi/aws-cli-fzf
+
+
+#
+# mise
+#
+[[ -e "$HOME/.local/bin/mise" ]] && eval "$($HOME/.local/bin/mise activate zsh)"
+
+#
+# 一般の設定
+#
+# Ctrl+s（ターミナルロック）を無効化。これがないとCtrl+sを含むキーバインドが無効になる。
+stty stop undef
+# Ctrl+d でターミナルを閉じないようにする
+setopt IGNOREEOF
+# 特殊文字の中で「単語」の境界として扱う文字を指定
+WORDCHARS="*?.-_[]~&;!#$%^(){}<>"
+# ヒストリにはスペースなどを整形した状態で保存する
+setopt hist_reduce_blanks
+# 直前と同じヒストリは記録しない
+setopt histignorealldups
+# 他のターミナルとヒストリを共有
+setopt share_history
+
+#
+# 補完の設定
+#
+# zsh の補完機能を使うおまじない
+autoload -Uz compinit
+compinit -C
+# 補完候補にも色を付ける
+zstyle ':completion:*' list-colors 'di=34;1'
+# ファイル名の途中でも補完候補とし、小文字は大文字としても検索
+zstyle ':completion:*' matcher-list 'm:{a-z}={A-Z}' 'l:|=* r:|[.-]=* m:{a-z}={A-Z}'
+# 補完後、メニュー選択モードになり左右キーで移動が出来る
+zstyle ':completion:*:default' menu select=2
+function mkcd(){mkdir -p $1 && cd $1}
+function peco-history-selection() {
+    BUFFER=`history -n 1 | tail -r  | awk '!a[$0]++' | peco`
+    CURSOR=$#BUFFER
+    zle reset-prompt
+}
+zle -N peco-history-selection
+bindkey '^R' peco-history-selection
+
+# delete (not backspace)
+bindkey "^[[3~" delete-char
+bindkey "^[3;5~" delete-char
+#
+# 一時的な設定
+#
+if which ls | grep -qF 'coreutils'; then
+  alias ls='ls --color=auto'
+else
+  alias ls='ls -G'
+fi
+if which arch >/dev/null 2>&1 && [[ $(arch) = "arm64" ]]; then
+  alias arm64='arch -arch arm64'
+  alias x86='arch -arch x86_64'
+fi
+alias which="$(where which | grep -v 'built-in' | head -1)"
+
+#
+# zlib
+#
+export LDFLAGS="-L/usr/local/opt/zlib/lib"
+export CPPFLAGS="-I/usr/local/opt/zlib/include"
+export PKG_CONFIG_PATH="/usr/local/opt/zlib/lib/pkgconfig"
+
+#
+# android
+#
+export ANDROID_HOME=$HOME/Library/Android/sdk
+export PATH=$ANDROID_HOME/tools/bin:$PATH
+export PATH=$ANDROID_HOME/emulator:$PATH
+export PATH=$ANDROID_HOME/platform-tools:$PATH
+
+#
+# Google Cloud
+#
+if ! command -v ~/workspace/apps/cloud_sql_proxy &> /dev/null; then
+    wget https://dl.google.com/cloudsql/cloud_sql_proxy.linux.amd64 -O ~/workspace/apps/cloud_sql_proxy
+    chmod +x ~/cloud_sql_proxy
+fi
+
+
+# 意図的に使いたいものは最後に加える
+PATH="$HOME/bin/main:$PATH"
+# 実験中のファイルはbin/developに置く
+PATH="$HOME/bin/develop:$PATH"
+
+typeset -U path PATH
+
+export BAT_THEME="Monokai Extended"
+
+
+# To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
+if [[ -d "$HOME/.config/zsh" ]]; then
+    [[ ! -f "$HOME/.config/zsh/p10k.zsh" ]] || source "$HOME/.config/zsh/p10k.zsh"
+else
+    [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
+fi
