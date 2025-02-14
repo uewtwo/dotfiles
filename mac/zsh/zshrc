@@ -1,3 +1,10 @@
+# Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
+# Initialization code that may require console input (password prompts, [y/n]
+# confirmations, etc.) must go above this block; everything else may go below.
+if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
+  source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
+fi
+
 bindkey -e
 
 ### Added by Zinit's installer
@@ -86,7 +93,10 @@ setopt share_history
 # 補完の設定
 #
 # zsh の補完機能を使うおまじない
-autoload -Uz compinit
+if type brew &>/dev/null; then
+  FPATH=$(brew --prefix)/share/zsh-completions:$FPATH
+  autoload -Uz compinit && compinit
+fi
 compinit -C
 # 補完候補にも色を付ける
 zstyle ':completion:*' list-colors 'di=34;1'
@@ -95,30 +105,41 @@ zstyle ':completion:*' matcher-list 'm:{a-z}={A-Z}' 'l:|=* r:|[.-]=* m:{a-z}={A-
 # 補完後、メニュー選択モードになり左右キーで移動が出来る
 zstyle ':completion:*:default' menu select=2
 function mkcd(){mkdir -p $1 && cd $1}
-function peco-history-selection() {
-    BUFFER=`history -n 1 | tail -r  | awk '!a[$0]++' | peco`
+
+# fzf history search
+function fzf-history-search() {
+    local tac
+    if command -v tac > /dev/null 2>&1; then
+        tac="tac"
+    else
+        tac="tail -r"
+    fi
+    BUFFER=$(history -n 1 | eval $tac | fzf --query "$LBUFFER" --no-sort)
     CURSOR=$#BUFFER
     zle reset-prompt
 }
-zle -N peco-history-selection
-bindkey '^R' peco-history-selection
+zle -N fzf-history-search
+bindkey '^R' fzf-history-search  # Ctrl+R for history search
 
 # delete (not backspace)
 bindkey "^[[3~" delete-char
 bindkey "^[3;5~" delete-char
+
 #
 # 一時的な設定
 #
-if which ls | grep -qF 'coreutils'; then
-  alias ls='ls --color=auto'
+if type gls > /dev/null 2>&1; then
+    alias ls='gls --color=auto'
+elif ls --color > /dev/null 2>&1; then
+    alias ls='ls --color=auto'
 else
-  alias ls='ls -G'
+    alias ls='ls -G'
 fi
-if which arch >/dev/null 2>&1 && [[ $(arch) = "arm64" ]]; then
+
+if command -v arch >/dev/null 2>&1 && [[ $(arch) = "arm64" ]]; then
   alias arm64='arch -arch arm64'
   alias x86='arch -arch x86_64'
 fi
-alias which="$(where which | grep -v 'built-in' | head -1)"
 
 #
 # zlib
@@ -138,11 +159,16 @@ export PATH=$ANDROID_HOME/platform-tools:$PATH
 #
 # Google Cloud
 #
-if ! command -v ~/workspace/apps/cloud_sql_proxy &> /dev/null; then
-    wget https://dl.google.com/cloudsql/cloud_sql_proxy.linux.amd64 -O ~/workspace/apps/cloud_sql_proxy
-    chmod +x ~/cloud_sql_proxy
+CLOUD_SQL_PROXY_DIR="$HOME/workspace/apps"
+if [ ! -f "$CLOUD_SQL_PROXY_DIR/cloud_sql_proxy" ]; then
+    if ! command -v curl &> /dev/null; then
+        echo "curl is not installed. Please install curl first."
+    else
+        mkdir -p "$CLOUD_SQL_PROXY_DIR"
+        curl -o "$CLOUD_SQL_PROXY_DIR/cloud_sql_proxy" https://dl.google.com/cloudsql/cloud_sql_proxy.linux.amd64
+        chmod +x "$CLOUD_SQL_PROXY_DIR/cloud_sql_proxy"
+    fi
 fi
-
 
 # 意図的に使いたいものは最後に加える
 PATH="$HOME/bin/main:$PATH"
@@ -153,10 +179,5 @@ typeset -U path PATH
 
 export BAT_THEME="Monokai Extended"
 
-
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
-if [[ -d "$HOME/.config/zsh" ]]; then
-    [[ ! -f "$HOME/.config/zsh/p10k.zsh" ]] || source "$HOME/.config/zsh/p10k.zsh"
-else
-    [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
-fi
+[[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh

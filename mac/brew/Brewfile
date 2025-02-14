@@ -1,26 +1,27 @@
 tap "argon/mas"
 tap "hashicorp/tap"
 tap "homebrew/bundle"
-tap "homebrew/cask"
-tap "homebrew/core"
 tap "homebrew/services"
 tap "leoafarias/fvm"
 tap "stepanhruda/tap"
 brew "act"
-brew "anyenv"
 brew "aws-elasticbeanstalk"
+brew "bat"
 brew "pycparser"
 brew "cffi"
+brew "coreutils"
 brew "cryptography"
+brew "expect"
 brew "awscli"
 brew "azure-cli"
 brew "bash-completion"
 brew "glib"
 brew "cairo"
-brew "direnv"
 brew "docutils"
+brew "fd"
 brew "folly"
 brew "fizz"
+brew "fzf"
 brew "wangle"
 brew "fbthrift"
 brew "fb303"
@@ -39,12 +40,14 @@ brew "mas"
 brew "mycli"
 brew "protobuf"
 brew "mysql"
+brew "mdcat"
 brew "p7zip"
 brew "peco"
 brew "pgcli"
 brew "poetry"
 brew "postgresql@14"
 brew "redis"
+brew "ripgrep"
 brew "swig"
 brew "tcl-tk"
 brew "telnet"
@@ -82,8 +85,6 @@ cask "pomatez"
 cask "postman", args: { appdir: "/Applications" }
 cask "raycast"
 cask "scroll-reverser", args: { appdir: "/Applications" }
-cask "sequel-ace", args: { appdir: "/Applications" }
-cask "skitch"
 cask "table-tool"
 cask "tableplus"
 cask "the-unarchiver", args: { appdir: "/Applications" }
@@ -91,14 +92,11 @@ cask "typora", args: { appdir: "/Applications" }
 cask "visual-studio-code", args: { appdir: "/Applications" }
 cask "zed"
 cask "zulu"
-mas "1Password 7", id: 1333542190
 mas "Amphetamine", id: 937984704
-mas "Developer", id: 640199958
 mas "Gapplin", id: 768053424
 mas "GarageBand", id: 682658836
 mas "iMovie", id: 408981434
 mas "Keynote", id: 409183694
-mas "Mini Calendar", id: 1088779979
 mas "Monosnap", id: 540348655
 mas "Numbers", id: 409203825
 mas "Pages", id: 409201541

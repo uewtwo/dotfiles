@@ -50,7 +50,9 @@ fi
 #
 # Ruby
 #
-mise use --global ruby
+if ! which node; then
+    $HOME/.local/bin/mise use --global ruby
+fi
 
 #
 # Java
@@ -98,7 +100,7 @@ fi
 #
 # Rust
 #
-sh <(curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs) -y
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
 
 
 #
@@ -110,6 +112,17 @@ ln -sf $SCRIPT_DIR/zsh/zshenv $HOME/.zshenv
 ln -sf $SCRIPT_DIR/zsh/zshrc $HOME/.zshrc
 ln -sf $SCRIPT_DIR/zsh/p10k.zsh $HOME/.config/zsh/p10k.zsh
 pip install requests # fzfのserverのために必要
-brew install coreutils gnu-sed fzf ripgrep bat fd expect mdcat 1password-cli
+zsh -i -c 'autoload -Uz compinit && compinit && compaudit | xargs chmod g-w'
 
+#
+# tmux
+#
+mkdir -p $HOME/.config/tmux
+ln -sf $SCRIPT_DIR/tmux/tmux.conf $HOME/.config/tmux/tmux.conf
+
+#
+# ssh
+#
+mkdir -p $HOME/.ssh
+ln -sf $SCRIPT_DIR/ssh/config $HOME/.ssh/config
 
