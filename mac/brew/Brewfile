@@ -1,8 +1,6 @@
 tap "argon/mas"
 tap "hashicorp/tap"
 tap "homebrew/bundle"
-tap "homebrew/cask"
-tap "homebrew/core"
 tap "homebrew/services"
 tap "leoafarias/fvm"
 tap "stepanhruda/tap"
@@ -83,7 +81,6 @@ cask "postman", args: { appdir: "/Applications" }
 cask "raycast"
 cask "scroll-reverser", args: { appdir: "/Applications" }
 cask "sequel-ace", args: { appdir: "/Applications" }
-cask "skitch"
 cask "table-tool"
 cask "tableplus"
 cask "the-unarchiver", args: { appdir: "/Applications" }
@@ -91,9 +88,7 @@ cask "typora", args: { appdir: "/Applications" }
 cask "visual-studio-code", args: { appdir: "/Applications" }
 cask "zed"
 cask "zulu"
-mas "1Password 7", id: 1333542190
 mas "Amphetamine", id: 937984704
-mas "Developer", id: 640199958
 mas "Gapplin", id: 768053424
 mas "GarageBand", id: 682658836
 mas "iMovie", id: 408981434
