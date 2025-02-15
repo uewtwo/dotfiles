@@ -113,6 +113,7 @@ ln -sf $SCRIPT_DIR/zsh/zshrc $HOME/.zshrc
 ln -sf $SCRIPT_DIR/zsh/p10k.zsh $HOME/.config/zsh/p10k.zsh
 pip install requests # fzfのserverのために必要
 zsh -i -c 'autoload -Uz compinit && compinit && compaudit | xargs chmod g-w'
+mkdir -p ~/.cache/zsh # 補完のためのキャッシュ
 
 #
 # tmux
@@ -125,4 +126,8 @@ ln -sf $SCRIPT_DIR/tmux/tmux.conf $HOME/.config/tmux/tmux.conf
 #
 mkdir -p $HOME/.ssh
 ln -sf $SCRIPT_DIR/ssh/config $HOME/.ssh/config
+
+# github
+mkdir -p $HOME/.ssh/github
+ssh-keygen -t ed25519 -C "nkyt161@gmail.com" -f ~/.ssh/github/github_id_rsa -N ""
 

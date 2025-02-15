@@ -1,112 +1,80 @@
-# Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
-# Initialization code that may require console input (password prompts, [y/n]
-# confirmations, etc.) must go above this block; everything else may go below.
+# 基本設定
+export LANG=ja_JP.UTF-8
+bindkey -e
+FUNCNEST=1000
+
+# キャッシュディレクトリの作成
+[[ ! -d ~/.cache/zsh ]] && mkdir -p ~/.cache/zsh
+
+# Powerlevel10k instant prompt
 if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
   source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
 fi
 
-bindkey -e
-
-### Added by Zinit's installer
+# zinit
 if [[ ! -f $HOME/.local/share/zinit/zinit.git/zinit.zsh ]]; then
-    print -P "%F{33} %F{220}Installing %F{33}ZDHARMA-CONTINUUM%F{220} Initiative Plugin Manager (%F{33}zdharma-continuum/zinit%F{220})…%f"
+    print -P "%F{33} %F{220}Installing zinit...%f"
     command mkdir -p "$HOME/.local/share/zinit" && command chmod g-rwX "$HOME/.local/share/zinit"
-    command git clone https://github.com/zdharma-continuum/zinit "$HOME/.local/share/zinit/zinit.git" && \
-        print -P "%F{33} %F{34}Installation successful.%f%b" || \
-        print -P "%F{160} The clone has failed.%f%b"
+    command git clone --depth 1 https://github.com/zdharma-continuum/zinit "$HOME/.local/share/zinit/zinit.git"
 fi
-
 source "$HOME/.local/share/zinit/zinit.git/zinit.zsh"
-autoload -Uz _zinit
-(( ${+_comps} )) && _comps[zinit]=_zinit
 
-# Load a few important annexes, without Turbo
-# (this is currently required for annexes)
-zinit light-mode for \
-    zdharma-continuum/zinit-annex-as-monitor \
-    zdharma-continuum/zinit-annex-bin-gem-node \
-    zdharma-continuum/zinit-annex-patch-dl \
-    zdharma-continuum/zinit-annex-rust
-
-### End of Zinit's installer chunk
-
-#
-# プラグインインストール
-#
-# Ninja
-zinit ice wait'!0' src"ninja.zsh" silent; zinit light cm-hirano-shigetoshi/cli-ninja # old
-zinit ice atclone"bash build.sh" atpull'%atclone' src"ninja.zsh" silent
-zinit light cm-hirano-shigetoshi/CommandLineNinja
-
-# ディレクトリスタック
-zinit ice atclone"bash build.sh" atpull'%atclone' src"d.zsh"
-zinit light cm-hirano-shigetoshi/d
-bindkey "^d^d" d
-
-# コマンド履歴
-zinit ice atclone"bash build.sh" atpull'%atclone' src"history.zsh"
-zinit light cm-hirano-shigetoshi/CommandHistory
-bindkey "^r" fzf-command-history
-
-# コマンドに色を付ける
-zinit ice wait'!0' silent; zinit light zdharma/fast-syntax-highlighting
-# クリップボード履歴
-zinit ice wait'!0' silent; zinit light cm-hirano-shigetoshi/clipboard-history
-# クリップボード変換テンプレ
-zinit ice wait'!0' silent; zinit light cm-hirano-shigetoshi/clipboard-convert-template
-# スニペットの貼り付け機能
-zinit ice wait'!0' silent; zinit light cm-hirano-shigetoshi/snippet
-# ファイル名検索
-zinit ice wait'!0' src"FzfFileSelector" silent; zinit light cm-hirano-shigetoshi/FzfFileSelector
-zle -N _fzf_file_selector
-bindkey '\e[Z' _fzf_file_selector
-# Powerlevel10k
+# プラグイン
 zinit ice depth=1
 zinit light romkatv/powerlevel10k
 
-# aws cliコマンド拡張
-zinit ice wait'!0' src"aws-cli-fzf.zsh" silent; zinit light cm-hirano-shigetoshi/aws-cli-fzf
+zinit wait lucid for \
+    atload"_zsh_autosuggest_start" \
+    zsh-users/zsh-autosuggestions \
+    zsh-users/zsh-completions \
+    zdharma-continuum/fast-syntax-highlighting
 
+# fzf と anyframe
+zinit ice from"gh-r" as"program"
+zinit light junegunn/fzf
+zinit light mollifier/anyframe
 
-#
-# mise
-#
-[[ -e "$HOME/.local/bin/mise" ]] && eval "$($HOME/.local/bin/mise activate zsh)"
+# 補完の初期化
+# ユーザーのローカル fpath を優先
+fpath=(
+    ~/.zsh/functions  # 必要に応じてカスタム関数ディレクトリを追加
+    $fpath
+)
 
-#
-# 一般の設定
-#
-# Ctrl+s（ターミナルロック）を無効化。これがないとCtrl+sを含むキーバインドが無効になる。
-stty stop undef
-# Ctrl+d でターミナルを閉じないようにする
-setopt IGNOREEOF
-# 特殊文字の中で「単語」の境界として扱う文字を指定
-WORDCHARS="*?.-_[]~&;!#$%^(){}<>"
-# ヒストリにはスペースなどを整形した状態で保存する
-setopt hist_reduce_blanks
-# 直前と同じヒストリは記録しない
-setopt histignorealldups
-# 他のターミナルとヒストリを共有
-setopt share_history
-
-#
-# 補完の設定
-#
-# zsh の補完機能を使うおまじない
+# システムと brew のパスを追加
+FPATH="$(brew --prefix)/share/zsh/site-functions:${FPATH}"
 if type brew &>/dev/null; then
-  FPATH=$(brew --prefix)/share/zsh-completions:$FPATH
-  autoload -Uz compinit && compinit
+    FPATH="$(brew --prefix)/share/zsh/site-functions:${FPATH}"
 fi
-compinit -C
-# 補完候補にも色を付ける
-zstyle ':completion:*' list-colors 'di=34;1'
-# ファイル名の途中でも補完候補とし、小文字は大文字としても検索
-zstyle ':completion:*' matcher-list 'm:{a-z}={A-Z}' 'l:|=* r:|[.-]=* m:{a-z}={A-Z}'
-# 補完後、メニュー選択モードになり左右キーで移動が出来る
-zstyle ':completion:*:default' menu select=2
-function mkcd(){mkdir -p $1 && cd $1}
 
-# fzf history search
+fpath=(
+    ${FPATH}
+    /usr/local/share/zsh/site-functions
+    /usr/share/zsh/vendor-completions
+    /usr/share/zsh/site-functions
+    $fpath
+)
+
+autoload -Uz compinit
+local zcd=~/.cache/zsh/.zcompdump
+if [[ -n "$zcd"(#qN.mh+24) ]]; then
+    compinit -C -d "$zcd"
+else
+    compinit -d "$zcd"
+    touch "$zcd"
+fi
+
+# 補完設定
+zstyle ':completion:*' format '%B%F{blue}%d%f%b'
+zstyle ':completion:*' group-name ''
+zstyle ':completion:*:default' menu select=2
+zstyle ':completion:*' list-colors "${(s.:.)LS_COLORS}"
+zstyle ':completion:*' matcher-list 'm:{a-z}={A-Z}'
+zstyle ':completion:*' keep-prefix
+zstyle ':completion:*' recent-dirs-insert both
+zstyle ':completion:*' completer _complete _ignored _files
+
+# fzf 履歴検索
 function fzf-history-search() {
     local tac
     if command -v tac > /dev/null 2>&1; then
@@ -119,15 +87,47 @@ function fzf-history-search() {
     zle reset-prompt
 }
 zle -N fzf-history-search
-bindkey '^R' fzf-history-search  # Ctrl+R for history search
 
-# delete (not backspace)
-bindkey "^[[3~" delete-char
-bindkey "^[3;5~" delete-char
+# キーバインド
+bindkey '^R' fzf-history-search
+bindkey '^P' history-beginning-search-backward
+bindkey '^N' history-beginning-search-forward
+bindkey -r '^I' # デフォルトの Tab 補完をunbind
+bindkey '^I' complete-word
 
-#
-# 一時的な設定
-#
+# 不要なエスケープシーケンスのunbind
+bindkey -r '\e[1;5u'
+bindkey -r '\e[2;27~'
+
+# 履歴設定
+HISTFILE=~/.zsh_history
+HISTSIZE=50000
+SAVEHIST=50000
+setopt HIST_IGNORE_DUPS
+setopt HIST_IGNORE_ALL_DUPS
+setopt HIST_IGNORE_SPACE
+setopt HIST_SAVE_NO_DUPS
+setopt SHARE_HISTORY
+setopt INC_APPEND_HISTORY
+
+# 基本オプション
+setopt AUTO_CD
+setopt AUTO_PARAM_SLASH
+setopt NO_BEEP
+setopt IGNOREEOF
+setopt INTERACTIVE_COMMENTS
+
+# PATH 設定
+typeset -U path PATH
+path=(
+    $HOME/bin/{main,develop}
+    /usr/local/bin
+    /usr/bin
+    /bin
+    $path
+)
+
+# ls エイリアス
 if type gls > /dev/null 2>&1; then
     alias ls='gls --color=auto'
 elif ls --color > /dev/null 2>&1; then
@@ -136,48 +136,8 @@ else
     alias ls='ls -G'
 fi
 
-if command -v arch >/dev/null 2>&1 && [[ $(arch) = "arm64" ]]; then
-  alias arm64='arch -arch arm64'
-  alias x86='arch -arch x86_64'
-fi
+# mise
+eval "$(~/.local/bin/mise activate)"
 
-#
-# zlib
-#
-export LDFLAGS="-L/usr/local/opt/zlib/lib"
-export CPPFLAGS="-I/usr/local/opt/zlib/include"
-export PKG_CONFIG_PATH="/usr/local/opt/zlib/lib/pkgconfig"
-
-#
-# android
-#
-export ANDROID_HOME=$HOME/Library/Android/sdk
-export PATH=$ANDROID_HOME/tools/bin:$PATH
-export PATH=$ANDROID_HOME/emulator:$PATH
-export PATH=$ANDROID_HOME/platform-tools:$PATH
-
-#
-# Google Cloud
-#
-CLOUD_SQL_PROXY_DIR="$HOME/workspace/apps"
-if [ ! -f "$CLOUD_SQL_PROXY_DIR/cloud_sql_proxy" ]; then
-    if ! command -v curl &> /dev/null; then
-        echo "curl is not installed. Please install curl first."
-    else
-        mkdir -p "$CLOUD_SQL_PROXY_DIR"
-        curl -o "$CLOUD_SQL_PROXY_DIR/cloud_sql_proxy" https://dl.google.com/cloudsql/cloud_sql_proxy.linux.amd64
-        chmod +x "$CLOUD_SQL_PROXY_DIR/cloud_sql_proxy"
-    fi
-fi
-
-# 意図的に使いたいものは最後に加える
-PATH="$HOME/bin/main:$PATH"
-# 実験中のファイルはbin/developに置く
-PATH="$HOME/bin/develop:$PATH"
-
-typeset -U path PATH
-
-export BAT_THEME="Monokai Extended"
-
-# To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
+# Powerlevel10k 設定
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
