@@ -119,6 +119,7 @@ mkdir -p ~/.cache/zsh # 補完のためのキャッシュ
 # tmux
 #
 mkdir -p $HOME/.config/tmux
+git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
 ln -sf $SCRIPT_DIR/tmux/tmux.conf $HOME/.config/tmux/tmux.conf
 
 #
