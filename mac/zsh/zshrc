@@ -82,7 +82,14 @@ function fzf-history-search() {
     else
         tac="tail -r"
     fi
-    BUFFER=$(history -n 1 | eval $tac | fzf --query "$LBUFFER" --no-sort)
+    BUFFER=$(history -n 1 | eval $tac | fzf --query "$LBUFFER" --no-sort \
+        --height "80%" \
+        --layout=reverse \
+        --info=inline \
+        --border \
+        --prompt="History > " \
+        --preview "echo {}" \
+        --preview-window=up:3:wrap)
     CURSOR=$#BUFFER
     zle reset-prompt
 }
